@@ -278,42 +278,38 @@ class SpotifyUserController extends Controller
         }
     }
 
-    /**
-     * Debug endpoint - PostgreSQL version info
-     */
-    public function debug()
+    public function dashboard()
     {
-        try {
-            // Get PostgreSQL version
-            $pgVersion = null;
-            try {
-                $pgVersion = DB::select("SELECT version()")[0]->version ?? 'Unknown';
-            } catch (\Exception $e) {
-                $pgVersion = 'Connection failed: ' . $e->getMessage();
-            }
+        // 1. Data untuk Grafik Tipe Langganan (Subscription Type)
+        $subscriptionData = SpotifyUser::query()
+            ->select('subscription_type', DB::raw('count(*) as total'))
+            ->groupBy('subscription_type')
+            ->pluck('total', 'subscription_type');
 
-            $info = [
-                'import_class_exists' => class_exists('App\Imports\SpotifyUserImport'),
-                'export_class_exists' => class_exists('App\Exports\SpotifyUserExport'),
-                'excel_facade_exists' => class_exists('Maatwebsite\Excel\Facades\Excel'),
-                'model_exists' => class_exists('App\Models\SpotifyUser'),
-                'storage_temp_exists' => Storage::disk('local')->exists('temp'),
-                'storage_temp_writable' => is_writable(storage_path('app')),
-                'user_count' => SpotifyUser::count(),
-                'php_version' => PHP_VERSION,
-                'laravel_version' => app()->version(),
-                'database_connection' => config('database.default'),
-                'postgres_version' => $pgVersion,
-                'pdo_pgsql_loaded' => extension_loaded('pdo_pgsql')
-            ];
-        } catch (\Exception $e) {
-            $info = [
-                'error' => 'Debug failed: ' . $e->getMessage(),
-                'database_connection' => config('database.default'),
-                'pdo_pgsql_loaded' => extension_loaded('pdo_pgsql')
-            ];
-        }
-        
-        return response()->json($info);
+        // 2. Data untuk Grafik Churn
+        $churnData = SpotifyUser::query()
+            ->select('is_churned', DB::raw('count(*) as total'))
+            ->groupBy('is_churned')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                // Mengubah nilai 1/0 menjadi label "Churned"/"Retained"
+                $key = $item->is_churned ? 'Churned' : 'Retained';
+                return [$key => $item->total];
+            });
+
+        // 3. Data untuk Grafik 10 Negara Teratas
+        $countryData = SpotifyUser::query()
+            ->select('country', DB::raw('count(*) as total'))
+            ->groupBy('country')
+            ->orderBy('total', 'desc')
+            ->limit(10)
+            ->pluck('total', 'country');
+
+        // Kirim semua data yang sudah diolah ke view
+        return view('spotify.dashboard', [
+            'subscriptionData' => $subscriptionData,
+            'churnData' => $churnData,
+            'countryData' => $countryData,
+        ]);
     }
 }
