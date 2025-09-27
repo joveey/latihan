@@ -127,11 +127,11 @@
                 </div>
 
                 <table class="w-full whitespace-nowrap">
-                    <thead class="bg-slate-50">
-                        <tr class="text-left">
-                            <th class="px-6 py-3 text-xs font-semibold uppercase text-slate-500 tracking-wider">User ID</th>
+                    <thead class="bg-slate-50 text-left">
+                        <tr class="border-b-2 border-slate-200">
+                            <th class="px-6 py-3 text-xs font-semibold uppercase text-slate-500 tracking-wider text-center">User ID</th>
                             <th class="px-6 py-3 text-xs font-semibold uppercase text-slate-500 tracking-wider">Gender</th>
-                            <th class="px-6 py-3 text-xs font-semibold uppercase text-slate-500 tracking-wider">Age</th>
+                            <th class="px-6 py-3 text-xs font-semibold uppercase text-slate-500 tracking-wider text-center">Age</th>
                             <th class="px-6 py-3 text-xs font-semibold uppercase text-slate-500 tracking-wider">Country</th>
                             <th class="px-6 py-3 text-xs font-semibold uppercase text-slate-500 tracking-wider">Subscription</th>
                             <th class="px-6 py-3 text-xs font-semibold uppercase text-slate-500 tracking-wider">Device</th>
@@ -140,15 +140,15 @@
                     </thead>
                     <tbody class="divide-y divide-slate-200">
                         @forelse ($spotifyUsers as $user)
-                            <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-6 py-4 text-sm text-slate-700">{{ $user->user_id }}</td>
+                            <tr class="hover:bg-indigo-50 even:bg-slate-50/50 transition-colors duration-150">
+                                <td class="px-6 py-4 text-sm text-slate-700 font-medium text-center">{{ $user->user_id }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-700">{{ $user->gender }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-700">{{ $user->age }}</td>
+                                <td class="px-6 py-4 text-sm text-slate-700 text-center">{{ $user->age }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-700">{{ $user->country }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-700">{{ $user->subscription_type }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-700">{{ $user->device_type }}</td>
                                 <td class="px-6 py-4">
-                                    <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full {{ !$user->is_churned ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full {{ $user->is_churned ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $user->is_churned ? 'Yes' : 'No' }}
                                     </span>
                                 </td>
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else if (result.error) {
                     showNotification(result.error, 'error');
                 }
-                 throw new Error('Store operation failed');
+                   throw new Error('Store operation failed');
             }
 
             // On success, the page will reload, and the success message will be shown via Blade session flash
