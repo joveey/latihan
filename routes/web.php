@@ -4,10 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SpotifyUserController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('spotify.index');
 });
 
-Route::get('/spotify-users', [SpotifyUserController::class, 'index'])->name('spotify.index');
-Route::post('/spotify-users/preview', [SpotifyUserController::class, 'preview'])->name('spotify.preview');
-Route::post('/spotify-users/store', [SpotifyUserController::class, 'store'])->name('spotify.store');
-Route::get('/spotify-users/export', [SpotifyUserController::class, 'export'])->name('spotify.export');
+Route::prefix('spotify-users')->name('spotify.')->group(function () {
+    Route::get('/', [SpotifyUserController::class, 'index'])->name('index');
+    Route::post('/preview', [SpotifyUserController::class, 'preview'])->name('preview');
+    Route::post('/store', [SpotifyUserController::class, 'store'])->name('store');
+    Route::get('/export', [SpotifyUserController::class, 'export'])->name('export');
+    Route::get('/debug', [SpotifyUserController::class, 'debug'])->name('debug');
+});
