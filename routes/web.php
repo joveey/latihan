@@ -13,4 +13,5 @@ Route::prefix('spotify-users')->name('spotify.')->group(function () {
     Route::post('/store', [SpotifyUserController::class, 'store'])->name('store');
     Route::get('/export', [SpotifyUserController::class, 'export'])->name('export');
     Route::get('/debug', [SpotifyUserController::class, 'debug'])->name('debug');
+    
 });
