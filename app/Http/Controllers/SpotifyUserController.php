@@ -19,30 +19,25 @@ class SpotifyUserController extends Controller
         try {
             $query = SpotifyUser::query();
 
-            // Apply search filters with PostgreSQL compatibility
             if ($request->has('search')) {
                 foreach ($request->search as $field => $value) {
                     if ($value !== null && $value !== '') {
                         if ($field === 'is_churned') {
-                            // PostgreSQL boolean handling
                             $query->where($field, $value === '1' ? true : false);
                         } elseif (in_array($field, ['user_id', 'age', 'listening_time', 'songs_played_per_day', 'ads_listened_per_week'])) {
-                            // Numeric fields - exact match
                             $query->where($field, $value);
                         } elseif ($field === 'skip_rate') {
-                            // Decimal field handling
                             $query->where($field, 'LIKE', '%' . $value . '%');
                         } else {
-                            // Text fields - case insensitive search for PostgreSQL
                             $query->where(DB::raw('LOWER(' . $field . ')'), 'LIKE', '%' . strtolower($value) . '%');
                         }
                     }
                 }
             }
-
+            
+            $query->orderBy('user_id', 'asc');
             $spotifyUsers = $query->orderBy('id', 'desc')->paginate(10);
 
-            // Get distinct values for filters with proper ordering
             $genders = SpotifyUser::distinct()->orderBy('gender')->pluck('gender')->filter();
             $countries = SpotifyUser::distinct()->orderBy('country')->pluck('country')->filter();
             $subscriptions = SpotifyUser::distinct()->orderBy('subscription_type')->pluck('subscription_type')->filter();
@@ -65,19 +60,15 @@ class SpotifyUserController extends Controller
         try {
             // Validate request
             $validated = $request->validate([
-                'file' => 'required|file|mimes:xlsx,xls|max:10240' // Max 10MB
+                'file' => 'required|file|mimes:xlsx,xls|max:10240'
             ]);
 
             Log::info('File preview started', ['original_name' => $request->file('file')->getClientOriginalName()]);
 
             $file = $request->file('file');
-
-            // Additional file checks
             if (!$file->isValid()) {
                 return response()->json(['message' => 'File upload gagal. Silakan coba lagi.'], 422);
             }
-
-            // Read Excel file
             $import = new SpotifyUserImport();
             $collections = Excel::toCollection($import, $file);
             

@@ -128,7 +128,7 @@
                                 <td class="px-6 py-4">{{ $user->subscription_type }}</td>
                                 <td class="px-6 py-4">{{ $user->device_type }}</td>
                                 <td class="px-6 py-4">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $user->is_churned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $user->is_churned ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $user->is_churned ? 'Yes' : 'No' }}
                                     </span>
                                 </td>
