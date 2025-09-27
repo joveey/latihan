@@ -80,14 +80,13 @@
             <form id="filter-form" method="GET" action="{{ route('spotify.index') }}">
                 <div class="p-4 bg-slate-50/50 border-b border-slate-200">
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-                        <input type="text" name="search[user_id]" placeholder="Cari User ID..." class="col-span-1 lg:col-span-1 w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ request('search.user_id') }}">
-                        <select name="search[gender]" class="col-span-1 lg:col-span-1 w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="number" name="search[user_id]" placeholder="Cari User ID..." oninput="this.value = this.value.replace(/\D/g, '')" class="col-span-1 lg:col-span-1 w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ request('search.user_id') }}">                        <select name="search[gender]" class="col-span-1 lg:col-span-1 w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                              <option value="">Semua Gender</option>
                              @foreach($genders as $gender)
                                 <option value="{{ $gender }}" @selected(request('search.gender') == $gender)>{{ $gender }}</option>
                              @endforeach
                         </select>
-                        <input type="number" name="search[age]" placeholder="Cari Umur..." class="col-span-1 lg:col-span-1 w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ request('search.age') }}">
+                        <input type="number" name="search[age]" placeholder="Cari Umur..." oninput="this.value = this.value.replace(/\D/g, '')" class="col-span-1 lg:col-span-1 w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ request('search.age') }}">
                         <select name="search[country]" class="col-span-1 lg:col-span-1 w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">Semua Negara</option>
                              @foreach($countries as $country)
