@@ -13,7 +13,6 @@
     <div class="container mx-auto p-6">
         <h1 class="text-3xl font-bold mb-6">Spotify User Churn Data</h1>
 
-        {{-- Notifikasi --}}
         <div id="notification-container">
             @if (session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -38,7 +37,6 @@
         @endif
         </div>
 
-
         <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Unggah & Unduh Data (XLSX)</h2>
             <div class="flex justify-between items-center">
@@ -55,12 +53,10 @@
             </div>
         </div>
 
-        {{-- Tabel Data --}}
         <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-x-auto">
             <form method="GET" action="{{ route('spotify.index') }}">
                 <table class="w-full whitespace-nowrap">
                     <thead class="bg-gray-50 dark:bg-gray-700 text-sm">
-                        {{-- Baris Judul Kolom --}}
                         <tr class="text-left font-bold">
                             <th class="px-6 py-3">User ID</th>
                             <th class="px-6 py-3">Gender</th>
@@ -71,7 +67,6 @@
                             <th class="px-6 py-3">Churned</th>
                             <th class="px-6 py-3"></th>
                         </tr>
-                        {{-- Baris Search Bar --}}
                         <tr class="bg-white dark:bg-gray-800">
                             <td class="px-4 py-2"><input type="text" name="search[user_id]" placeholder="Cari User ID..." class="w-full px-2 py-1.5 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm" value="{{ request('search.user_id') }}"></td>
                             <td class="px-4 py-2">
@@ -137,7 +132,7 @@
                                         {{ $user->is_churned ? 'Yes' : 'No' }}
                                     </span>
                                 </td>
-                                <td></td> {{-- Kolom kosong agar sejajar --}}
+                                <td></td>
                             </tr>
                         @empty
                             <tr>
@@ -159,9 +154,7 @@
                 <h3 class="text-2xl font-semibold">Preview Data Unggahan</h3>
             </div>
             <div class="p-6 overflow-y-auto">
-                <div id="preview-table-container" class="overflow-x-auto">
-                    {{-- Tabel preview akan diisi oleh JavaScript --}}
-                </div>
+                <div id="preview-table-container" class="overflow-x-auto"></div>
             </div>
             <div class="p-6 border-t flex justify-end gap-4">
                 <button id="cancel-button" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded-md">Batal</button>
@@ -205,17 +198,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (!response.ok) {
-                // Tangani error dari backend dan tampilkan notifikasi
                 let errorMsg = result.message || 'Terjadi kesalahan.';
                 if (result.errors && result.errors.file) {
                     errorMsg = result.errors.file[0];
                 }
                 showNotification(errorMsg, 'error');
-                // Hentikan proses jika error
                 return;
             }
 
-            // Jika berhasil, buat tabel preview dan tampilkan modal
             let table = '<table class="w-full whitespace-nowrap"><thead><tr class="text-left font-bold">';
             result.headings.forEach(header => {
                 table += `<th class="px-6 py-3 bg-gray-50 dark:bg-gray-700">${header.replace(/_/g, ' ').toUpperCase()}</th>`;
@@ -237,7 +227,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error during preview:', error);
             showNotification('Tidak dapat terhubung ke server atau terjadi kesalahan script.', 'error');
         } finally {
-            // Selalu kembalikan tombol ke keadaan semula
             uploadButton.disabled = false;
             uploadButton.textContent = 'Unggah';
             fileInput.value = '';
@@ -266,9 +255,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 showNotification(errorMsg, 'error');
                 throw new Error(errorMsg);
             }
-
             window.location.reload();
-
         } catch (error) {
             console.error('Error during store:', error);
         } finally {
@@ -290,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <span class="block sm:inline">${message}</span>
             </div>
         `;
-        notificationContainer.innerHTML = notification; // Ganti innerHTML agar tidak menumpuk
+        notificationContainer.innerHTML = notification;
     }
 });
 </script>

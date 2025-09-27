@@ -1,54 +1,59 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Imports;
 
-use App\Imports\SpotifyUserImport;
-use Illuminate\Console\Command;
-class ImportSpotifyChurn extends Command
+use App\Models\SpotifyUser;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\Importable;
+use Maatwebsite\Excel\Concerns\WithUpserts;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
+
+class SpotifyUserImport implements ToModel, WithHeadingRow, WithUpserts, WithValidation
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:import-spotify-churn {file : The path to the CSV file relative to the storage/app folder.}';
+    use Importable;
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Imports Spotify churn data from a given CSV file.';
-
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function model(array $row)
     {
+        $offlineListening = $row['offline_listening'];
+        $isChurned = $row['is_churned'];
 
-        $file = $this->argument('file');
-        
-        $filePath = storage_path('app/' . $file);
+        return new SpotifyUser([
+            'user_id'             => $row['user_id'],
+            'gender'              => $row['gender'],
+            'age'                 => $row['age'],
+            'country'             => $row['country'],
+            'subscription_type'   => $row['subscription_type'],
+            'listening_time'      => $row['listening_time'],
+            'songs_played_per_day' => $row['songs_played_per_day'],
+            'skip_rate'           => $row['skip_rate'],
+            'device_type'         => $row['device_type'],
+            'ads_listened_per_week' => $row['ads_listened_per_week'],
+            'offline_listening'   => strtolower($offlineListening) === 'true' || $offlineListening === 1 || $offlineListening === '1',
+            'is_churned'          => strtolower($isChurned) === 'true' || $isChurned === 1 || $isChurned === '1',
+        ]);
+    }
 
-        if (!file_exists($filePath)) {
-            $this->error("File not found at: {$filePath}");
-            return 1; 
-        }
+    public function uniqueBy()
+    {
+        return 'user_id';
+    }
 
-        $this->info("Starting import for file: {$file}");
-
-        try {
-            $import = new SpotifyUserImport;
-            $import->withOutput($this->output);
-            $import->import($filePath);
-
-            $this->output->success('Import completed successfully!');
-
-        } catch (\Exception $e) {
-            $this->error('An error occurred during the import: ' . $e->getMessage());
-            return 1;
-        }
-
-        return 0;
+    public function rules(): array
+    {
+        return [
+            'user_id' => 'required|integer',
+            'gender' => 'required|string',
+            'age' => 'required|integer',
+            'country' => 'required|string',
+            'subscription_type' => 'required|string',
+            'listening_time' => 'required|integer',
+            'songs_played_per_day' => 'required|integer',
+            'skip_rate' => 'required|numeric',
+            'device_type' => 'required|string',
+            'ads_listened_per_week' => 'required|integer',
+            'offline_listening' => 'required',
+            'is_churned' => 'required',
+        ];
     }
 }

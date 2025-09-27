@@ -47,4 +47,4 @@ class SpotifyUserExport implements FromCollection, WithHeadings, WithMapping // 
             $user->is_churned ? 'TRUE' : 'FALSE',
         ];
     }
-}
+}   
